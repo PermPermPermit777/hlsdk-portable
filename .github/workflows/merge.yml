@@ -1,0 +1,17 @@
+name: merge
+on:
+  workflow_dispatch:
+jobs:
+  merge-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Merge staging -> master
+        uses: devmasx/merge-branch@v1.4.0
+        with:
+          type: now
+          target_branch: CLAnniversary
+          github_token: ${{ secrets.GITHUB_TOKEN }}
