@@ -15,9 +15,9 @@ jobs:
           type: now
           target_branch: CLAnniversary
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Merge upstream -> insecure
+      - name: Merge upstream -> clcampaign
         uses: devmasx/merge-branch@master
         with:
           type: now
-          target_branch: insecure
+          target_branch: clcampaign
           github_token: ${{ secrets.GITHUB_TOKEN }}
