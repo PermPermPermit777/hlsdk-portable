@@ -28,12 +28,17 @@ jobs:
           submodules: recursive
 
       - name: setting up ndk
-        uses: nttld/setup-ndk@5bc54e77d3f78364d4e333b1c8eedcf9414c5e64
+        uses: nttld/setup-ndk@v1.5.0
         id: setup-ndk
         with:
           ndk-version: r30
-          local-cache: true
-
+      - name: Cache Android NDK
+        uses: actions/cache@v6.1.0
+        with:
+          path: /home/runner/.setup-ndk/r30
+          key: ${{ runner.os }}-ndk-r30
+          restore-keys: |
+           ${{ runner.os }}-ndk-
       - name: setting up cmake
         uses: jwlawson/actions-setup-cmake@v2.2.0
         with:
