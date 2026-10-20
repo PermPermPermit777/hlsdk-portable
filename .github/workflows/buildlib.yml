@@ -28,16 +28,21 @@ jobs:
           submodules: recursive
 
       - name: setting up ndk
-        uses: nttld/setup-ndk@v1.5.0
+        uses: nttld/setup-ndk@5bc54e77d3f78364d4e333b1c8eedcf9414c5e64
         id: setup-ndk
         with:
           ndk-version: r30
-          add-to-path: false
-      - name: Cache Android NDK
-        uses: actions/cache@v6.1.0
-        with:
-          path: /home/runner/.setup-ndk/r30
-          key: ${{ runner.os }}-ndk-r30
+          local-cache: true
+      - name: Restore Android Symlinks # fixes by DmitriySalnikov
+        run: |
+          directory="${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin"
+
+          find "$directory" -type l | while read link; do
+              current_target=$(readlink "$link")
+              new_target="$directory/$(basename "$current_target")"
+              ln -sf "$new_target" "$link"
+              echo "Changed $(basename "$link") from $current_target to $new_target"
+          done
       - name: setting up cmake
         uses: jwlawson/actions-setup-cmake@v2.2.0
         with:
