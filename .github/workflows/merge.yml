@@ -1,0 +1,25 @@
+name: merge
+on:
+  workflow_dispatch:
+jobs:
+  merge-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+
+      - name: Merge master -> CLAnniversary
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          target_branch: CLAnniversary
+          message: merge master into CLAnniversary
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Merge master -> theyhunger
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          target_branch: theyhunger
+          message: merge master into theyhunger
+          github_token: ${{ secrets.GITHUB_TOKEN }}
