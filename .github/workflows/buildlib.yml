@@ -32,13 +32,12 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r30
+          add-to-path: false
       - name: Cache Android NDK
         uses: actions/cache@v6.1.0
         with:
           path: /home/runner/.setup-ndk/r30
           key: ${{ runner.os }}-ndk-r30
-          restore-keys: |
-           ${{ runner.os }}-ndk-
       - name: setting up cmake
         uses: jwlawson/actions-setup-cmake@v2.2.0
         with:
