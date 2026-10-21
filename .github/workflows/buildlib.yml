@@ -35,8 +35,8 @@ jobs:
       - name: Cache Android NDK
         uses: actions/cache@main
         with:
-          path: /home/runner/.setup-ndk/r30
-          key: ${{ runner.os }}-ndk-r30
+          path: ${{ steps.setup-ndk.outputs.ndk-path }}
+          key: setup-ndk-r30-linux
       - name: Restore Android Symlinks # fixes by DmitriySalnikov
         run: |
           directory="${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin"
@@ -50,18 +50,18 @@ jobs:
       - name: Updating Cmake
         uses: jwlawson/actions-setup-cmake@v2.2.0
         with:
-          cmake-version: '4.4.2'
+          cmake-version: '4.4.4'
 
       - name: Configuration CMake For Android
         env:
-          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          PATH_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           mkdir -p build-${{ matrix.arch.abi }}
           cd build-${{ matrix.arch.abi }}
           cmake -S . -G "Ninja" \
-            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=$PATH_NDK/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=${{ matrix.arch.android_abi }} \
-            -DANDROID_NDK=$ANDROID_NDK_HOME \
+            -DANDROID_NDK=$PATH_NDK \
             -DANDROID_PLATFORM=android-21 \
             -DCMAKE_BUILD_TYPE=Release \
             -DPOLLY=ON \
