@@ -19,7 +19,7 @@ jobs:
             abi: 'arm64-v8a'
             android_abi: 'arm64-v8a'
 
-    name: buildlibs - ${{ matrix.arch.name }}
+    name: buildlibs - x86/arm7l/arm64
 
     steps:
       - name: checkout code
@@ -32,11 +32,7 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r30
-      - name: Cache Android NDK
-        uses: actions/cache@main
-        with:
-          path: ${{ steps.setup-ndk.outputs.ndk-path }}
-          key: setup-ndk-r30-linux
+          local-cache: true
       - name: Restore Android Symlinks # fixes by DmitriySalnikov
         run: |
           directory="${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin"
