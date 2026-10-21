@@ -23,16 +23,20 @@ jobs:
 
     steps:
       - name: checkout code
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@main
         with:
           submodules: recursive
 
-      - name: setting up ndk
+      - name: Setup NDK
         uses: nttld/setup-ndk@5bc54e77d3f78364d4e333b1c8eedcf9414c5e64
         id: setup-ndk
         with:
           ndk-version: r30
-          local-cache: true
+      - name: Cache Android NDK
+        uses: actions/cache@main
+        with:
+          path: /home/runner/.setup-ndk/r30
+          key: ${{ runner.os }}-ndk-r30
       - name: Restore Android Symlinks # fixes by DmitriySalnikov
         run: |
           directory="${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin"
@@ -43,12 +47,12 @@ jobs:
               ln -sf "$new_target" "$link"
               echo "Changed $(basename "$link") from $current_target to $new_target"
           done
-      - name: setting up cmake
+      - name: Updating Cmake
         uses: jwlawson/actions-setup-cmake@v2.2.0
         with:
           cmake-version: '4.4.2'
 
-      - name: configures cmake for ${{ matrix.arch.name }}
+      - name: Configuration CMake For Android
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
@@ -70,7 +74,7 @@ jobs:
 
       - name: uploading artifact ${{ matrix.arch.name }}
         if: success()
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@main
         with:
           name: android-${{ matrix.arch.abi }}-artifacts
           path: |
