@@ -26,27 +26,37 @@ jobs:
         uses: actions/checkout@main
         with:
           submodules: recursive
-      - name: Cache NDK
-        uses: actions/cache@main
-        id: android-ndk
+      - name: Setup NDK
+        uses: nttld/setup-ndk@5bc54e77d3f78364d4e333b1c8eedcf9414c5e64
+        id: setup-ndk
         with:
-          path: ${ANDROID_HOME}/ndk/30.0.16248370
-          key: android-ndk-30.0.16248370
-      - name: Install NDK 
-        run: echo "y" | sudo ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install "ndk;30.0.16248370"
+          ndk-version: r30
+          local-cache: true
+      - name: Restore Android Symlinks # fixes by DmitriySalnikov
+        run: |
+          directory="${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin"
+
+          find "$directory" -type l | while read link; do
+              current_target=$(readlink "$link")
+              new_target="$directory/$(basename "$current_target")"
+              ln -sf "$new_target" "$link"
+              echo "Changed $(basename "$link") from $current_target to $new_target"
+          done
       - name: Updating Cmake
         uses: jwlawson/actions-setup-cmake@v2.2.0
         with:
           cmake-version: '4.4.4'
 
       - name: Configuration CMake For Android
+        env:
+          PATH_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           mkdir -p build-${{ matrix.arch.abi }}
           cd build-${{ matrix.arch.abi }}
           cmake -S . -G "Ninja" \
-            -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=$PATH_NDK/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=${{ matrix.arch.android_abi }} \
-            -DANDROID_NDK=${ANDROID_NDK} \
+            -DANDROID_NDK=$PATH_NDK \
             -DANDROID_PLATFORM=android-21 \
             -DCMAKE_BUILD_TYPE=Release \
             -DPOLLY=ON \
