@@ -30,7 +30,7 @@ jobs:
         uses: actions/cache@main
         id: android-ndk
         with:
-          path: ${ANDROID_HOME}/ndk
+          path: ${ANDROID_HOME}/ndk/30.0.16248370
           key: android-ndk-30.0.16248370
       - name: Install NDK 
         run: echo "y" | sudo ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install "ndk;30.0.16248370"
