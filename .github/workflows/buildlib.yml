@@ -19,15 +19,14 @@ jobs:
             abi: 'arm64-v8a'
             android_abi: 'arm64-v8a'
 
-    name: buildlibs - ${{ matrix.arch.name }}
+    name: buildlibs - x86/arm7l/arm64
 
     steps:
       - name: checkout code
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@main
         with:
           submodules: recursive
-
-      - name: setting up ndk
+      - name: Setup NDK
         uses: nttld/setup-ndk@5bc54e77d3f78364d4e333b1c8eedcf9414c5e64
         id: setup-ndk
         with:
@@ -43,21 +42,21 @@ jobs:
               ln -sf "$new_target" "$link"
               echo "Changed $(basename "$link") from $current_target to $new_target"
           done
-      - name: setting up cmake
+      - name: Updating Cmake
         uses: jwlawson/actions-setup-cmake@v2.2.0
         with:
-          cmake-version: '4.4.2'
+          cmake-version: '4.4.4'
 
-      - name: configures cmake for ${{ matrix.arch.name }}
+      - name: Configuration CMake For Android
         env:
-          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          PATH_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           mkdir -p build-${{ matrix.arch.abi }}
           cd build-${{ matrix.arch.abi }}
           cmake -S . -G "Ninja" \
-            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=$PATH_NDK/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=${{ matrix.arch.android_abi }} \
-            -DANDROID_NDK=$ANDROID_NDK_HOME \
+            -DANDROID_NDK=$PATH_NDK \
             -DANDROID_PLATFORM=android-21 \
             -DCMAKE_BUILD_TYPE=Release \
             -DPOLLY=ON \
@@ -70,7 +69,7 @@ jobs:
 
       - name: uploading artifact ${{ matrix.arch.name }}
         if: success()
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@main
         with:
           name: android-${{ matrix.arch.abi }}-artifacts
           path: |
