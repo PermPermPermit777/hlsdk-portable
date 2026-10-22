@@ -33,22 +33,20 @@ jobs:
           path: ${ANDROID_HOME}/ndk
           key: android-ndk-30.0.16248370
       - name: Install NDK 
-        run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;30.0.16248370"
+        run: echo "y" | sudo ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install "ndk;30.0.16248370"
       - name: Updating Cmake
         uses: jwlawson/actions-setup-cmake@v2.2.0
         with:
           cmake-version: '4.4.4'
 
       - name: Configuration CMake For Android
-        env:
-          PATH_NDK: ${ANDROID_HOME}/ndk/30.0.16248370
         run: |
           mkdir -p build-${{ matrix.arch.abi }}
           cd build-${{ matrix.arch.abi }}
           cmake -S . -G "Ninja" \
-            -DCMAKE_TOOLCHAIN_FILE=$PATH_NDK/build/cmake/android.toolchain.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=${{ matrix.arch.android_abi }} \
-            -DANDROID_NDK=$PATH_NDK \
+            -DANDROID_NDK=${ANDROID_NDK} \
             -DANDROID_PLATFORM=android-21 \
             -DCMAKE_BUILD_TYPE=Release \
             -DPOLLY=ON \
