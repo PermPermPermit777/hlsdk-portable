@@ -46,7 +46,6 @@ jobs:
         uses: jwlawson/actions-setup-cmake@v2.2.0
         with:
           cmake-version: '4.4.4'
-      - run: apt update
       - name: ccache
         uses: hendrikmuhs/ccache-action@main
       - name: Configuration CMake For Android
