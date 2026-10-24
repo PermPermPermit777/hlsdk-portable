@@ -46,8 +46,15 @@ jobs:
         uses: jwlawson/actions-setup-cmake@v2.2.0
         with:
           cmake-version: '4.4.4'
-      - name: ccache
-        uses: hendrikmuhs/ccache-action@main
+      - run: sudo apt-get install ccache
+      - name: Setup compilation cache
+        uses: actions/cache@main
+        with:
+          path: ~/.cache/ccache
+          key: lib-ccache-${{ github.sha }}
+          restore-keys: |
+            lib-ccache-${{ github.ref_name }}
+            lib-ccache-
       - name: Configuration CMake For Android
         env:
           PATH_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
@@ -57,7 +64,6 @@ jobs:
           cmake -S . -G "Ninja" \
             -DCMAKE_TOOLCHAIN_FILE=$PATH_NDK/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=${{ matrix.arch.android_abi }} \
-            -DANDROID_NDK=$PATH_NDK \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DANDROID_PLATFORM=android-21 \
