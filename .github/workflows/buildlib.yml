@@ -46,16 +46,12 @@ jobs:
         uses: jwlawson/actions-setup-cmake@v2.2.0
         with:
           cmake-version: '4.4.4'
-      - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.11
-        with:
-          version: "v0.18.0"
-          token: ${{ secrets.TOKEN }}
-
+      - run: apt update
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@main
       - name: Configuration CMake For Android
         env:
           PATH_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
-          SCCACHE_GHA_ENABLED: "true"
         run: |
           mkdir -p build-${{ matrix.arch.abi }}
           cd build-${{ matrix.arch.abi }}
@@ -63,8 +59,8 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=$PATH_NDK/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=${{ matrix.arch.android_abi }} \
             -DANDROID_NDK=$PATH_NDK \
-            -DCMAKE_C_COMPILER_LAUNCHER=sccache \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DANDROID_PLATFORM=android-21 \
             -DCMAKE_BUILD_TYPE=Release \
             -DPOLLY=ON \
