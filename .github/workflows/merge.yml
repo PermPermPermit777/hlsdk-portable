@@ -14,12 +14,12 @@ jobs:
         with:
           type: now
           target_branch: CLAnniversary
-          message: merge master into CLAnniversary
+          message: merge ${{ github.sha }} into CLAnniversary
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Merge master -> theyhunger
         uses: devmasx/merge-branch@master
         with:
           type: now
           target_branch: theyhunger
-          message: merge master into theyhunger
+          message: merge ${{ github.sha }} into theyhunger
           github_token: ${{ secrets.GITHUB_TOKEN }}
