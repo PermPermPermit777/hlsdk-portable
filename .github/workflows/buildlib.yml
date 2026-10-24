@@ -31,6 +31,17 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r30
+          local-cache: true
+      - name: Restore Android Symlinks # fixes by DmitriySalnikov
+        run: |
+          directory="${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin"
+
+          find "$directory" -type l | while read link; do
+              current_target=$(readlink "$link")
+              new_target="$directory/$(basename "$current_target")"
+              ln -sf "$new_target" "$link"
+              echo "Changed $(basename "$link") from $current_target to $new_target"
+          done
       - name: Updating Cmake
         uses: jwlawson/actions-setup-cmake@v2.2.0
         with:
