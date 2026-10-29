@@ -1,0 +1,14 @@
+name: Update freevgui
+on: workflow_dispatch
+jobs:
+  update:
+   runs-on: ubuntu-latest
+   steps:
+     - uses: actions/checkout@main
+       with:
+         fetch-depth: 0
+         submodules: true
+     - uses: sgoudham/update-git-submodules@main
+     - uses: stefanzweifel/git-auto-commit-action@master
+       with:
+         commit_message: bump freevgui
