@@ -16,10 +16,10 @@ jobs:
           target_branch: CLAnniversary
           message: merge master into CLAnniversary
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Merge master -> theyhunger
+      - name: Merge master -> Counter-Life
         uses: devmasx/merge-branch@master
         with:
           type: now
-          target_branch: theyhunger
-          message: merge master into theyhunger
+          target_branch: Counter-Life
+          message: merge master into Counter-life
           github_token: ${{ secrets.GITHUB_TOKEN }}
